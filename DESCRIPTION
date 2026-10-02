@@ -1,0 +1,29 @@
+Package: UlavalSSD
+Type: Package
+Title: Quebec Data and Tools for Introductory Data Science
+Version: 0.3.1
+Authors@R: person("Aurélien", "Nicosia", role = c("aut", "cre"),
+    email = "nicosia.aurelien@gmail.com")
+Description: Historical weather observations and food-establishment conviction
+    records from Quebec for teaching data import, missing values, exploratory
+    analysis and reproducible reporting. Includes bilingual prompts and feedback
+    for a penguin data-cleaning exercise, and an optional static R code-style
+    diagnostic based on 'lintr', as described by Hester and others (2025)
+    <doi:10.21105/joss.07240>. Data are distributed as fixed teaching snapshots
+    and require no network access during use.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 4.1.0)
+Suggests: knitr, lintr (>= 3.4.0), rmarkdown, testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+URL: https://github.com/AurelienNicosiaULaval/UlavalSSD
+BugReports: https://github.com/AurelienNicosiaULaval/UlavalSSD/issues
+Config/roxygen2/version: 8.1.0
+NeedsCompilation: no
+Packaged: 2026-09-22 21:32:52 UTC; runner
+Author: Aurélien Nicosia [aut, cre]
+Maintainer: Aurélien Nicosia <nicosia.aurelien@gmail.com>
+Repository: CRAN
+Date/Publication: 2026-10-02 11:10:02 UTC

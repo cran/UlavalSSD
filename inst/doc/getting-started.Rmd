@@ -1,0 +1,145 @@
+---
+title: "Working with Quebec teaching snapshots"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working with Quebec teaching snapshots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+UlavalSSD provides fixed snapshots for practising data cleaning and exploratory
+analysis. These examples run offline and use base R. The same objects can be
+used with the tidyverse when those packages are installed.
+
+```{r load}
+library(UlavalSSD)
+```
+
+## Dates and missing measurements
+
+`MeteoQuebec` retains the raw column names and types expected by the course.
+Month and day are character strings. The first column, `...1`, is an export
+identifier, not a measurement. Explicitly converting to a base data frame makes
+subsetting behaviour independent of whether tibble is installed.
+
+```{r weather}
+weather <- as.data.frame(MeteoQuebec)
+weather$date <- as.Date(with(weather, paste(year, month, day, sep = "-")))
+range(weather$date)
+head(weather[c("date", "min_temp", "max_temp")])
+```
+
+A complete sequence of dates does not mean every measurement is observed.
+Count the missing values before choosing a summary or a model.
+
+```{r missing}
+measurements <- c(
+  "max_temp", "mean_temp", "min_temp", "total_precip",
+  "total_rain", "total_snow", "snow_grnd"
+)
+data.frame(
+  variable = measurements,
+  missing = vapply(weather[measurements], function(x) sum(is.na(x)), integer(1)),
+  missing_proportion = vapply(
+    weather[measurements], function(x) mean(is.na(x)),
+    numeric(1)
+  ),
+  row.names = NULL
+)
+```
+
+For a descriptive plot, retain dates alongside observations. Missing values
+remain visible as gaps rather than being replaced by zero.
+
+```{r plot, fig.width=6, fig.height=3.5, fig.alt="Daily minimum temperatures during 2024 in the historical teaching snapshot."}
+one_year <- weather[weather$year == 2024, , drop = FALSE]
+plot(one_year$date, one_year$min_temp,
+  type = "l",
+  xlab = "Date", ylab = "Daily minimum temperature (degrees C)"
+)
+```
+
+An independent reconstruction from the official ECCC service matched every
+stored column on 2026-09-22. Station 5251 is used through 1995 and station 26892
+from 1996. These data support cleaning exercises; a climate-trend study would
+require checking station history, measurement flags and consistency first.
+
+## Administrative records and formatted amounts
+
+`listecondamnation` contains historical records. It is not a representative
+sample of food establishments. One establishment may appear more than once.
+Counts of these records cannot estimate the probability of an offence or an
+establishment's present-day operating conditions.
+
+```{r records}
+records <- as.data.frame(listecondamnation)
+range(as.Date(records$Date_publication))
+head(sort(table(records$Type_etablissement), decreasing = TRUE))
+```
+
+`Amende` is text. Examine its formats before parsing currency. The following
+example validates a deliberately small set of known formats, rather than
+silently discarding every non-numeric character in an arbitrary string.
+
+```{r amounts}
+amount_text <- c("1 500 $", "250,50 $", NA_character_)
+amount_clean <- gsub("[ $]", "", amount_text)
+amount_clean <- sub(",", ".", amount_clean, fixed = TRUE)
+valid <- is.na(amount_clean) | grepl("^[0-9]+([.][0-9]{1,2})?$", amount_clean)
+stopifnot(all(valid))
+amount <- as.numeric(amount_clean)
+data.frame(amount_text, amount)
+```
+
+This example uses synthetic amounts. Applying a conversion to the full dataset
+requires checking all observed formats and preserving the original text for
+verification.
+
+## Exercise prompts and feedback
+
+French output remains the default. The row feedback is a fixed answer key for
+the original penguin exercise file distributed on the course website. It is
+valid only before rows are filtered or reordered.
+
+```{r prompts}
+consulter_taches("histogramme", lang = "en")
+verifier_valeur_aberrante(11, lang = "en")
+```
+
+## Static style feedback
+
+Install the optional package `lintr` to use `eval_tidyverse_style()`. It examines
+code without executing it. In a Quarto document it inspects fenced R chunks and
+reports line numbers in the original file.
+
+```{r style}
+if (requireNamespace("lintr", quietly = TRUE)) {
+  path <- tempfile(fileext = ".R")
+  writeLines(c("daily_mean <- mean(c(2, 4, 6))", "print(daily_mean)"), path)
+  feedback <- eval_tidyverse_style(path)
+  feedback[c("total", "status", "diagnostics")]
+  unlink(path)
+}
+```
+
+The score is a transparent formative indicator based on seven observable
+criteria. It is not a validated assessment of programming competence. Empty or
+invalid code has no score, and the clarity of reasoning and usefulness of
+comments remain for human review. See `?eval_tidyverse_style` for the criteria
+and Quarto fence support.
+
+## Sources and snapshot limits
+
+Weather observations are attributed to Environment and Climate Change Canada;
+administrative records are attributed to MAPAQ via Donnees Quebec. See
+`?MeteoQuebec`, `?listecondamnation`, and the installed attribution file:
+
+```{r attribution}
+system.file("COPYRIGHTS", package = "UlavalSSD")
+```
+
+The datasets do not refresh during installation, loading, examples or tests.

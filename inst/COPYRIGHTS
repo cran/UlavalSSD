@@ -1,0 +1,45 @@
+UlavalSSD attribution and data provenance
+
+Code and original package documentation:
+Copyright 2025-2026 Aurelien Nicosia. MIT license (see LICENSE).
+The MIT license does not relicense third-party data.
+
+listecondamnation:
+Data source: Gouvernement du Quebec, Ministere de l'Agriculture, des Pecheries
+et de l'Alimentation (MAPAQ), via Donnees Quebec.
+Dataset: Condamnations des etablissements alimentaires et condamnations
+concernant le bien-etre des animaux.
+Catalogue identifier: 515374ee-ce34-464f-9875-7d1af3fa9b2a
+https://www.donneesquebec.ca/recherche/dataset/condamnations-des-etablissements-alimentaires-et-condamnations-concernant-le-bien-etre-des-anim
+Source licence: Creative Commons Attribution 4.0 International (CC BY 4.0),
+as recorded by the source catalogue on 2026-09-22.
+https://creativecommons.org/licenses/by/4.0/
+The original package documentation reports a selection of columns.
+The maintainer confirms that all 1712 records originate from this official
+MAPAQ dataset distributed through Donnees Quebec, with no records added from
+another source. The exact extraction date and original transformation script
+are not recorded.
+The 1712-row teaching snapshot is unchanged in this version. Publication
+dates in the snapshot range from 2023-02-13 to 2025-02-10.
+The package is not endorsed by the data provider. Historical records do not
+establish the current situation of an establishment.
+
+MeteoQuebec:
+Data source: Environment and Climate Change Canada (ECCC).
+Contains information licenced under the Data Server End-use Licence of
+Environment and Climate Change Canada.
+https://eccc-msc.github.io/open-data/licence/readme_en/
+Current licence displayed as version 2.1.1, August 2026, accessed 2026-09-22.
+Source collection: https://api.weather.gc.ca/collections/climate-daily
+The observations were independently retrieved on 2026-09-22. Every stored
+column, including missing values, matches the current official source using:
+- STN_ID 5251 / CLIMATE_IDENTIFIER 7016294 through 1995-12-31;
+- STN_ID 26892 / CLIMATE_IDENTIFIER 701S001 from 1996-01-01 to 2025-01-22.
+The reconstruction script and source manifest are in the repository's data-raw
+directory. The .rda serialization is unchanged for course compatibility.
+Original documentation attributed the earlier extraction to 'weathercan'; the
+original retrieval date and preparation script have not been recovered.
+The 2026 retrieval and complete comparison establish an independently verified
+source for the measurements under the current data-service licence.
+Only selected fields are included; measurement flags are not included.
+The package is not endorsed by ECCC. Station homogeneity is not established.
